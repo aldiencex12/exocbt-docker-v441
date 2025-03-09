@@ -1,0 +1,34 @@
+networks:
+  network:
+
+services:
+  app:
+    image: extraordinarycbt:4.4.1
+    container_name: exocbt_app
+    ports:
+      - "${APP_EXPOSE}:${SERVER_PORT}"
+    env_file:
+      - .env
+    volumes:
+      - .env:/app/.env
+    networks:
+      - network
+    depends_on:
+      - db
+
+  db:
+    image: encex12/custom_postgres
+    container_name: exocbt_db
+    ports:
+      - "${DB_EXPOSE}:${DB_PORT}"
+    networks:
+      - network
+    env_file:
+      - .env
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_PORT=${DB_PORT}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_DB=${DB_NAME}
